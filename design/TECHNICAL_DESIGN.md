@@ -6,6 +6,26 @@
 **Inspired By:** pew.md's proven approach  
 **Language Stack:** Python (backend), TypeScript (frontend/extension), Node.js (tools)  
 **Deployment:** Cloud-native (AWS/GCP/Azure) with self-hosted option  
+**AI Model Coverage:** Top 10 AI providers (see [AI_MODEL_COVERAGE.md](./AI_MODEL_COVERAGE.md))
+
+### Supported AI Models (Top 10)
+
+| Provider | Coverage | Method | Priority |
+|----------|----------|--------|----------|
+| **OpenAI** (GPT-4, GPT-3.5, o1) | 98% | API + Web + SDK | P0 ✅ |
+| **Anthropic** (Claude 3.5/3) | 100% | API + Web + CLI | P0 ✅ |
+| **Google** (Gemini 1.5/2.0) | 95% | API + Web | P0 ✅ |
+| **GitHub** (Copilot) | 100% | IDE + CLI | P0 ✅ |
+| **DeepSeek** (V2, Coder) | 90% | API + Logs | P1 🔄 |
+| **Meta** (Llama 3.1) | 85% | Ollama + Hosted | P1 🔄 |
+| **Mistral** (Large, Mixtral) | 90% | API + Web | P1 🔄 |
+| **MiniMax** (abab6.5) | 80% | API | P2 📋 |
+| **xAI** (Grok 1.5/2) | 75% | Web | P2 📋 |
+| **Cohere** (Command R+) | 85% | API | P2 📋 |
+
+**Total Expected Coverage:** 95-98% of enterprise AI usage
+
+📖 **Full Details:** See [AI Model Coverage Expansion](./AI_MODEL_COVERAGE.md) for complete implementation guide.
 
 ---
 
