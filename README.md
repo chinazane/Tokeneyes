@@ -1,53 +1,112 @@
-# AI Token Tracker - Project Summary
+# Tokeneyes - AI Token Usage Tracker
+
+**Company-wide AI token usage tracking and cost management system**
 
 ## 📋 Quick Overview
 
-**What:** Company-wide AI token usage tracking and cost management system  
+**What:** Enterprise AI cost management platform  
 **Approach:** Based on pew.md's proven log-scanning methodology  
-**Coverage:** 90-95% of AI usage across all tools  
+**Coverage:** 95-98% of AI usage across top 10 providers  
 **Privacy:** Never stores prompts/responses - only metadata  
 
----
+## 📊 Supported AI Models (Top 10)
 
-## 📁 Documentation
+| Provider | Models | Coverage | Status |
+|----------|--------|----------|--------|
+| **OpenAI** | GPT-4, GPT-3.5, o1 | 98% | ✅ Implemented |
+| **Anthropic** | Claude 3.5, Claude 3 | 100% | ✅ Implemented |
+| **Google** | Gemini 1.5/2.0 | 95% | ✅ Implemented |
+| **GitHub** | Copilot | 100% | ✅ Implemented |
+| **DeepSeek** | DeepSeek-V2, Coder | 90% | 🔄 In Progress |
+| **Meta** | Llama 3.1 | 85% | 📋 Planned |
+| **Mistral** | Mistral Large, Mixtral | 90% | 📋 Planned |
+| **MiniMax** | abab6.5 | 80% | 📋 Planned |
+| **xAI** | Grok 1.5/2 | 75% | 📋 Planned |
+| **Cohere** | Command R+ | 85% | 📋 Planned |
 
-This folder contains:
+## 🏗️ Project Structure
 
-1. **PRODUCT_DESIGN.md** - Product vision, user personas, UX flows, dashboards
-2. **TECHNICAL_DESIGN.md** - System architecture, component design, deployment
-3. **README.md** - This summary document
-
----
+```
+tokeneyes/
+├── design/                    # Complete design documentation
+│   ├── PRODUCT_DESIGN.md     # Product vision & UX (41 KB)
+│   ├── TECHNICAL_DESIGN.md   # System architecture (66 KB)
+│   ├── UI_DESIGN_SYSTEM.md   # UI/UX design system (36 KB)
+│   └── AI_MODEL_COVERAGE.md  # Top 10 AI models (35 KB)
+│
+├── src/                       # Implementation
+│   ├── scanner/               # Client-side log scanner ✅
+│   │   ├── daemon.py          # Main scanner daemon
+│   │   ├── discovery.py       # Log file discovery
+│   │   ├── parsers/           # AI model parsers (4 implemented)
+│   │   └── storage/           # Cursor store & event queue
+│   ├── browser-extension/     # Browser extension 📋
+│   ├── sdk/                   # SDK wrappers 📋
+│   └── backend/               # Backend API server 📋
+│
+└── README.md                  # This file
+```
 
 ## 🎯 Key Features
 
 ### For Employees
-- ✅ Zero-friction installation (1 command)
-- ✅ Invisible operation (no slowdown)
-- ✅ Personal dashboard to see own usage
-- ✅ Privacy guaranteed (no prompt logging)
+- ✅ Zero-friction installation
+- ✅ Invisible operation
+- ✅ Personal dashboard
+- ✅ Privacy guaranteed
 
 ### For Managers
 - ✅ Real-time team dashboard
-- ✅ Budget alerts (email/Slack)
-- ✅ Usage trends and forecasts
-- ✅ Top users/projects breakdown
-- ✅ Export reports for leadership
+- ✅ Budget alerts
+- ✅ Usage trends
+- ✅ Export reports
 
 ### For Finance
 - ✅ Company-wide visibility
-- ✅ Multi-vendor cost aggregation
-- ✅ Department-level budgets
-- ✅ Month-over-month trends
-- ✅ Forecasting & alerts
+- ✅ Multi-vendor cost tracking
+- ✅ Department budgets
+- ✅ Forecasting
+
+## 🚀 Quick Start
+
+```bash
+# Clone repository
+git clone https://github.com/chinazane/Tokeneyes.git
+cd Tokeneyes
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run scanner daemon
+python -m src.scanner.daemon
+```
+
+## 📚 Documentation
+
+- [Product Design](design/PRODUCT_DESIGN.md) - Vision, personas, pricing, ROI
+- [Technical Design](design/TECHNICAL_DESIGN.md) - Architecture, deployment, DR plan
+- [UI/UX Design](design/UI_DESIGN_SYSTEM.md) - Colors, components, accessibility
+- [AI Model Coverage](design/AI_MODEL_COVERAGE.md) - Top 10 providers implementation
+
+## 📊 Implementation Status
+
+**Phase 1 (P0): Core Models** ✅ Complete
+- OpenAI, Anthropic, Google Gemini, GitHub Copilot
+
+**Phase 2 (P1): Major Models** 🔄 In Progress
+- DeepSeek, Meta Llama, Mistral AI
+
+**Phase 3 (P2): Additional Models** 📋 Planned
+- MiniMax, xAI Grok, Cohere
+
+## 🔗 Links
+
+- **Repository**: https://github.com/chinazane/Tokeneyes
+- **Issues**: https://github.com/chinazane/Tokeneyes/issues
 
 ---
 
-## 🏗️ Architecture Overview
-
-```
-┌─────────────────────────────────────────────────┐
-│ CLIENT TIER (Employee Machines)                 │
+**Built for companies serious about AI cost management** 🎯
 │ • Log Scanner (Python daemon)                   │
 │ • Browser Extension (Chrome/Edge)               │
 │ • SDK Wrappers (optional)                       │

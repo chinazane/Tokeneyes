@@ -5,7 +5,9 @@
       "Bash(gh:*)",
       "Bash(git remote:*)",
       "Bash(git config:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "WebSearch"
     ]
   },
   "enableAllProjectMcpServers": true,
