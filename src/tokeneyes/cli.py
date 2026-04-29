@@ -22,6 +22,103 @@ from .config import Config
 console = Console()
 
 
+def _setup_sdk_wrappers():
+    """
+    Set up automatic SDK wrapper imports via sitecustomize.py
+
+    This creates a sitecustomize.py file that automatically installs
+    import hooks when Python starts, making SDK tracking automatic.
+    """
+    import site
+    import sys
+
+    console.print("\n[cyan]🔧 Setting up automatic SDK tracking...[/cyan]\n")
+
+    # Find site-packages directory
+    site_packages = site.getsitepackages()
+
+    # Prefer user site-packages (doesn't require sudo)
+    user_site = site.getusersitepackages()
+
+    # Ensure user site-packages exists
+    Path(user_site).mkdir(parents=True, exist_ok=True)
+
+    sitecustomize_path = Path(user_site) / 'sitecustomize.py'
+
+    # Content for sitecustomize.py
+    sitecustomize_content = '''"""
+Tokeneyes auto-tracking setup
+
+This file is automatically executed when Python starts.
+It installs import hooks to automatically track AI SDK usage.
+
+Created by: tokeneyes init
+"""
+
+import os
+
+# Only activate if TOKENEYES_TRACK is set (opt-in)
+# Or if ~/.aitracker/auto_track exists (permanent opt-in)
+if os.getenv('TOKENEYES_TRACK') or os.path.exists(os.path.expanduser('~/.aitracker/auto_track')):
+    try:
+        from tokeneyes.sdk.autopatch import install_import_hooks
+        install_import_hooks()
+    except ImportError:
+        # Tokeneyes not installed, skip silently
+        pass
+'''
+
+    try:
+        # Check if sitecustomize.py already exists
+        if sitecustomize_path.exists():
+            console.print(f"[yellow]⚠[/yellow]  {sitecustomize_path} already exists")
+
+            # Read existing content
+            with open(sitecustomize_path) as f:
+                existing = f.read()
+
+            # Check if Tokeneyes already configured
+            if 'tokeneyes' in existing.lower():
+                console.print("[green]✓[/green] Tokeneyes tracking already configured")
+            else:
+                # Append to existing
+                console.print("Appending Tokeneyes configuration...")
+                with open(sitecustomize_path, 'a') as f:
+                    f.write('\n\n' + sitecustomize_content)
+                console.print(f"[green]✓[/green] Updated {sitecustomize_path}")
+        else:
+            # Create new sitecustomize.py
+            with open(sitecustomize_path, 'w') as f:
+                f.write(sitecustomize_content)
+            console.print(f"[green]✓[/green] Created {sitecustomize_path}")
+
+        # Create auto_track marker file (permanent opt-in)
+        auto_track_marker = Path.home() / '.aitracker' / 'auto_track'
+        auto_track_marker.parent.mkdir(parents=True, exist_ok=True)
+        auto_track_marker.touch()
+        console.print(f"[green]✓[/green] Created auto-track marker: {auto_track_marker}")
+
+        # Show success message
+        console.print("\n[bold green]✓ SDK tracking enabled![/bold green]\n")
+
+        console.print("[bold]How it works:[/bold]")
+        console.print("  • Python automatically loads import hooks on startup")
+        console.print("  • All OpenAI/Anthropic imports are automatically wrapped")
+        console.print("  • Your code runs unchanged - tracking is transparent\n")
+
+        console.print("[bold]In your code:[/bold]")
+        console.print("  [dim]from openai import OpenAI  # ← Automatically tracked![/dim]")
+        console.print("  [dim]from anthropic import Anthropic  # ← Automatically tracked![/dim]\n")
+
+        console.print("[bold]To disable:[/bold]")
+        console.print(f"  [dim]rm {auto_track_marker}[/dim]\n")
+
+    except Exception as e:
+        console.print(f"[red]✗[/red] Error setting up SDK tracking: {e}")
+        console.print("\n[yellow]Alternative:[/yellow] Use manual imports:")
+        console.print("  [dim]from tokeneyes.sdk import OpenAI[/dim]\n")
+
+
 @click.group()
 @click.version_option(version='0.1.0', prog_name='tokeneyes')
 def main():
@@ -39,11 +136,13 @@ def main():
 @click.option('--api-key', help='API authentication key')
 @click.option('--scan-interval', type=int, help='Scan interval in seconds (default: 300)')
 @click.option('--sync-interval', type=int, help='Sync interval in seconds (default: 300)')
-def init(api_url, api_key, scan_interval, sync_interval):
+@click.option('--setup-sdk-wrappers/--no-setup-sdk-wrappers', default=None, help='Setup automatic SDK wrapper imports')
+def init(api_url, api_key, scan_interval, sync_interval, setup_sdk_wrappers):
     """
     Initialize Tokeneyes configuration
 
     Creates configuration file at ~/.aitracker/config.json
+    and optionally sets up automatic SDK wrapper imports.
     """
     console.print(Panel.fit(
         "[bold cyan]Tokeneyes Configuration[/bold cyan]",
@@ -102,8 +201,30 @@ def init(api_url, api_key, scan_interval, sync_interval):
 
     console.print(table)
 
+    # SDK Wrapper Setup
+    console.print("\n" + "="*60)
+    console.print("[bold cyan]SDK Wrapper Setup[/bold cyan]")
+    console.print("="*60 + "\n")
+
+    console.print("Tokeneyes can automatically track API calls in your Python code.")
+    console.print("This requires a one-time setup to enable import hooks.\n")
+
+    # Ask if user wants SDK wrapper setup (if not specified via CLI option)
+    if setup_sdk_wrappers is None:
+        setup_choice = console.input(
+            "Enable automatic SDK tracking? [[green]Y[/green]/n]: "
+        ).strip().lower()
+        setup_sdk_wrappers = setup_choice != 'n'
+
+    if setup_sdk_wrappers:
+        _setup_sdk_wrappers()
+    else:
+        console.print("\n[yellow]ℹ[/yellow]  SDK wrapper setup skipped.")
+        console.print("You can manually use SDK wrappers by changing imports:")
+        console.print("  [dim]from tokeneyes.sdk import OpenAI[/dim]\n")
+
     console.print("\n[bold]Next steps:[/bold]")
-    console.print("  1. Start the scanner: [cyan]tokeneyes start[/cyan]")
+    console.print("  1. Start the scanner: [cyan]tokeneyes start -d[/cyan]")
     console.print("  2. Check status: [cyan]tokeneyes status[/cyan]")
     console.print("  3. View stats: [cyan]tokeneyes stats[/cyan]\n")
 
