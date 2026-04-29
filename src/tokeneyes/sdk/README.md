@@ -2,9 +2,16 @@
 
 Drop-in replacements for popular AI SDKs with **automatic token tracking**.
 
+> **📖 Important:** The daemon (`tokeneyes start -d`) tracks CLI/IDE usage automatically.  
+> SDK wrappers track direct API calls but require you to change imports OR call `tokeneyes.auto_track()`.  
+> See [SDK Setup Guide](../../../SDK_SETUP_GUIDE.md) for details.
+
 ## Overview
 
-Tokeneyes SDK wrappers allow you to track AI token usage with **zero code changes** to your existing applications. Simply change your import statement and continue using the same API.
+Tokeneyes SDK wrappers allow you to track AI token usage in your applications. Choose your preferred method:
+
+**Method 1 (Recommended):** Change import statement  
+**Method 2:** Call `tokeneyes.auto_track()` at startup
 
 ### Supported SDKs
 
