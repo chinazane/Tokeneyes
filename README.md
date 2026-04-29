@@ -84,6 +84,8 @@ pip install -e .
 
 ### Setup and Usage
 
+#### Scanner Daemon
+
 ```bash
 # Initialize configuration
 tokeneyes init
@@ -100,6 +102,34 @@ tokeneyes stats
 # Stop daemon
 tokeneyes stop
 ```
+
+#### SDK Wrappers (Zero-Code Integration)
+
+**Drop-in replacement for OpenAI:**
+
+```python
+# Just change the import - everything else stays the same!
+from tokeneyes.sdk import OpenAI
+
+client = OpenAI(api_key="...")
+response = client.chat.completions.create(...)
+
+# ✅ Token usage automatically tracked!
+```
+
+**Drop-in replacement for Anthropic:**
+
+```python
+# Just change the import - everything else stays the same!
+from tokeneyes.sdk import Anthropic
+
+client = Anthropic(api_key="...")
+response = client.messages.create(...)
+
+# ✅ Token usage automatically tracked!
+```
+
+See [SDK Wrappers README](src/tokeneyes/sdk/README.md) for full documentation.
 
 ### Available Commands
 
@@ -137,12 +167,16 @@ tokeneyes stop
 - ✅ Centralized configuration management
 - ✅ Installable via `pip install -e .`
 
-**Phase 5: SDK Wrappers** 📋 Next Priority
-- Python SDK wrapper (drop-in OpenAI/Anthropic replacement)
-- Node.js SDK wrapper
-- Zero-code integration
+**Phase 5: SDK Wrappers** ✅ Complete (100%)
+- ✅ OpenAI Python SDK wrapper (drop-in replacement)
+- ✅ Anthropic Python SDK wrapper (drop-in replacement)
+- ✅ Automatic token tracking for API calls
+- ✅ Zero-code integration (just change import)
+- ✅ Async support (AsyncOpenAI, AsyncAnthropic)
+- ✅ Example scripts and comprehensive documentation
+- 📋 Node.js SDK wrappers (planned)
 
-**Phase 6: Backend Infrastructure** 📋 Planned
+**Phase 6: Backend Infrastructure** 📋 Next Priority
 - FastAPI server
 - TimescaleDB
 - Redis caching
