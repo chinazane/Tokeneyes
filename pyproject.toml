@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tokeneyes"
+version = "0.1.0"
+description = "AI token usage tracker for vibe coding"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Tokeneyes Team", email = "team@tokeneyes.dev"}
+]
+keywords = ["ai", "tokens", "tracking", "monitoring", "cost-management", "claude", "openai", "gemini"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "aiohttp>=3.9.0",
+    "python-dateutil>=2.8.2",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+]
+
+[project.scripts]
+tokeneyes = "tokeneyes.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/chinazane/Tokeneyes"
+Documentation = "https://github.com/chinazane/Tokeneyes/tree/main/design"
+Repository = "https://github.com/chinazane/Tokeneyes"
+Issues = "https://github.com/chinazane/Tokeneyes/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["tokeneyes*"]
+
+[tool.setuptools.package-data]
+tokeneyes = ["py.typed"]

@@ -71,17 +71,46 @@ tokeneyes/
 
 ## 🚀 Quick Start
 
+### Installation
+
 ```bash
 # Clone repository
 git clone https://github.com/chinazane/Tokeneyes.git
 cd Tokeneyes
 
-# Install dependencies
-pip install -r requirements.txt
-
-# Run scanner daemon
-python -m src.scanner.daemon
+# Install package
+pip install -e .
 ```
+
+### Setup and Usage
+
+```bash
+# Initialize configuration
+tokeneyes init
+
+# Start scanner daemon (background mode)
+tokeneyes start -d
+
+# Check daemon status
+tokeneyes status
+
+# View usage statistics
+tokeneyes stats
+
+# Stop daemon
+tokeneyes stop
+```
+
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `tokeneyes init` | Initialize configuration (API key, intervals) |
+| `tokeneyes start` | Start scanner daemon (add `-d` for background) |
+| `tokeneyes stop` | Stop the running daemon |
+| `tokeneyes status` | Show daemon status and metrics |
+| `tokeneyes stats` | Display token usage statistics |
+| `tokeneyes dashboard` | Open web dashboard (when backend is available) |
 
 ## 📚 Documentation
 
@@ -100,12 +129,20 @@ python -m src.scanner.daemon
 - ✅ ~2,800 lines of code
 - ✅ 100% test coverage verified
 
-**Phase 4: SDK Wrappers** 📋 Next Priority
+**Phase 4: Executable CLI Application** ✅ Complete (100%)
+- ✅ Professional CLI with Click framework
+- ✅ Beautiful terminal output with Rich library
+- ✅ Commands: init, start, stop, status, stats, dashboard
+- ✅ PID file management for daemon process
+- ✅ Centralized configuration management
+- ✅ Installable via `pip install -e .`
+
+**Phase 5: SDK Wrappers** 📋 Next Priority
 - Python SDK wrapper (drop-in OpenAI/Anthropic replacement)
 - Node.js SDK wrapper
 - Zero-code integration
 
-**Phase 5: Backend Infrastructure** 📋 Planned
+**Phase 6: Backend Infrastructure** 📋 Planned
 - FastAPI server
 - TimescaleDB
 - Redis caching

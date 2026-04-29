@@ -4,7 +4,7 @@ Test script to verify all parsers are working correctly
 
 import asyncio
 from pathlib import Path
-from src.scanner.parsers import (
+from tokeneyes.parsers import (
     ParserRegistry,
     list_supported_services,
     get_parser

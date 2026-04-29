@@ -8,11 +8,13 @@ from pathlib import Path
 from typing import List, Dict
 from datetime import datetime
 import json
+import os
 
 from .discovery import LogDiscovery
 from .parsers import ParserRegistry, TokenEvent
 from .storage.cursor_store import CursorStore
 from .storage.event_queue import EventQueue
+from .config import Config
 
 
 class TokenScannerDaemon:
@@ -28,7 +30,7 @@ class TokenScannerDaemon:
         Args:
             config_path: Path to configuration file
         """
-        self.config = self._load_config(config_path)
+        self.config = Config(config_path=config_path)
         self.state_dir = Path.home() / '.aitracker'
         self.state_dir.mkdir(parents=True, exist_ok=True)
 
@@ -49,16 +51,23 @@ class TokenScannerDaemon:
         """Start the scanner daemon"""
         print("[TokenScanner] Starting daemon...")
 
-        # Initial scan
-        await self.scan_all_logs()
+        # Write PID file
+        self._write_pid_file()
 
-        # Start background tasks
-        tasks = [
-            self.periodic_scan(),
-            self.periodic_sync()
-        ]
+        try:
+            # Initial scan
+            await self.scan_all_logs()
 
-        await asyncio.gather(*tasks)
+            # Start background tasks
+            tasks = [
+                self.periodic_scan(),
+                self.periodic_sync()
+            ]
+
+            await asyncio.gather(*tasks)
+        finally:
+            # Clean up PID file on exit
+            self._remove_pid_file()
 
     async def scan_all_logs(self):
         """Scan all log files for all providers"""
@@ -110,16 +119,18 @@ class TokenScannerDaemon:
         print(f"[TokenScanner] Scan complete: {total_events} events queued")
 
     async def periodic_scan(self):
-        """Scan logs periodically (every 5 minutes)"""
+        """Scan logs periodically"""
+        scan_interval = self.config.get('scan_interval', 300)
         while True:
-            await asyncio.sleep(300)  # 5 minutes
+            await asyncio.sleep(scan_interval)
             print("[TokenScanner] Running periodic scan...")
             await self.scan_all_logs()
 
     async def periodic_sync(self):
-        """Sync queued events to server (every 5 minutes)"""
+        """Sync queued events to server"""
+        sync_interval = self.config.get('sync_interval', 300)
         while True:
-            await asyncio.sleep(300)  # 5 minutes
+            await asyncio.sleep(sync_interval)
 
             # Get unsynced events
             events = self.event_queue.get_unsynced(limit=100)
@@ -207,8 +218,40 @@ class TokenScannerDaemon:
 
         return mapping.get(provider, provider)
 
+    def _write_pid_file(self):
+        """Write PID file for daemon tracking"""
+        pid_file = self.state_dir / 'tokeneyes.pid'
+        with open(pid_file, 'w') as f:
+            f.write(str(os.getpid()))
+
+    def _remove_pid_file(self):
+        """Remove PID file on shutdown"""
+        pid_file = self.state_dir / 'tokeneyes.pid'
+        if pid_file.exists():
+            pid_file.unlink()
+
+    @staticmethod
+    def is_running() -> bool:
+        """Check if daemon is already running"""
+        pid_file = Path.home() / '.aitracker' / 'tokeneyes.pid'
+        if not pid_file.exists():
+            return False
+
+        # Check if process is alive
+        try:
+            with open(pid_file) as f:
+                pid = int(f.read().strip())
+            os.kill(pid, 0)  # Signal 0 checks existence
+            return True
+        except (OSError, ProcessLookupError, ValueError):
+            # Stale PID file - process is dead
+            return False
+
     def _load_config(self, config_path: Path = None) -> dict:
-        """Load configuration from file"""
+        """
+        Deprecated: Use Config class instead
+        Kept for backward compatibility
+        """
         if not config_path:
             config_path = Path.home() / '.aitracker' / 'config.json'
 
