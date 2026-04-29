@@ -458,49 +458,51 @@ python test_parsers.py
 
 ## 📝 **What's Next?**
 
-### Remaining Components (Future Phases)
+### Remaining Components (Current Scope: Vibe Coding - CLI/IDE)
 
-**Phase 4: Browser Extension** 📋
-- [ ] Chrome/Edge extension
-- [ ] Firefox extension
-- [ ] Safari extension
-- [ ] Intercept web-based AI interfaces
-- [ ] Real-time usage tracking
-
-**Phase 5: SDK Wrappers** 📋
+**Phase 4: SDK Wrappers** 📋
 - [ ] Python SDK wrapper (auto-tracking)
 - [ ] Node.js SDK wrapper
 - [ ] Drop-in replacement for OpenAI/Anthropic SDKs
 - [ ] Zero-code integration
+- [ ] Automatic token tracking for all API calls
 
-**Phase 6: Backend Infrastructure** 📋
+**Phase 5: Backend Infrastructure** 📋
 - [ ] FastAPI backend server
 - [ ] TimescaleDB setup
 - [ ] Redis caching
 - [ ] SQS message queue
 - [ ] Background workers
+- [ ] Authentication & authorization
 
-**Phase 7: Dashboard** 📋
+**Phase 6: Dashboard** 📋
 - [ ] Next.js frontend
 - [ ] Personal dashboard
 - [ ] Team dashboard
 - [ ] Company dashboard
 - [ ] Real-time charts (ECharts)
 
+### Future Scope (Out of Current Phase)
+
+**Browser Extension** 🔮
+- Deferred - Not needed for vibe coding (CLI/IDE) use case
+- Future consideration for web-based AI interfaces
+- Would track: ChatGPT web, Claude.ai, Gemini web, etc.
+
 ---
 
 ## 🎯 **Project Milestones**
 
-| Milestone | Status | Date |
-|-----------|--------|------|
-| **Design Phase** | ✅ Complete | Apr 27, 2026 |
-| **Phase 1: Core Parsers** | ✅ Complete | Apr 28, 2026 |
-| **Phase 2: Major Parsers** | ✅ Complete | Apr 29, 2026 |
-| **Phase 3: Additional Parsers** | ✅ Complete | Apr 29, 2026 |
-| **Browser Extension** | 📋 Planned | TBD |
-| **SDK Wrappers** | 📋 Planned | TBD |
-| **Backend API** | 📋 Planned | TBD |
-| **Dashboard** | 📋 Planned | TBD |
+| Milestone | Status | Date | Scope |
+|-----------|--------|------|-------|
+| **Design Phase** | ✅ Complete | Apr 27, 2026 | Current |
+| **Phase 1: Core Parsers** | ✅ Complete | Apr 28, 2026 | Current |
+| **Phase 2: Major Parsers** | ✅ Complete | Apr 29, 2026 | Current |
+| **Phase 3: Additional Parsers** | ✅ Complete | Apr 29, 2026 | Current |
+| **Phase 4: SDK Wrappers** | 📋 Planned | TBD | Current |
+| **Phase 5: Backend API** | 📋 Planned | TBD | Current |
+| **Phase 6: Dashboard** | 📋 Planned | TBD | Current |
+| **Browser Extension** | 🔮 Future | TBD | Out of Scope |
 
 ---
 
