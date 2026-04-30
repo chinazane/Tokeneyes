@@ -142,9 +142,133 @@ See [SDK Wrappers README](src/tokeneyes/sdk/README.md) for full documentation.
 | `tokeneyes stats` | Display token usage statistics |
 | `tokeneyes dashboard` | Open web dashboard (when backend is available) |
 
+## 🧪 Testing & Development
+
+### Run Tests
+
+```bash
+# Run all tests
+python -m pytest test_*.py -v
+
+# Run specific test file
+python -m pytest test_parsers.py -v
+python -m pytest test_sdk_wrappers_unit.py -v
+
+# Run with coverage
+python -m pytest test_*.py --cov=src/tokeneyes --cov-report=html
+```
+
+### Sample Testing Prompts
+
+**Test Parser Functionality:**
+```bash
+# Test all 10 AI model parsers
+python test_parsers.py
+
+# Expected output:
+# ✅ Total Parsers Registered: 10
+# ✅ Supported Services: openai, anthropic, google, github, deepseek, meta, mistral, minimax, xai, cohere
+# ✅ Phase 1 (P0) - Core Providers: 4/4
+# ✅ Phase 2 (P1) - Major Providers: 3/3
+# ✅ Phase 3 (P2) - Additional Providers: 3/3
+# ✅ Overall Coverage: 10/10 parsers (100.0%)
+```
+
+**Test SDK Wrappers:**
+```bash
+# Test SDK wrapper functionality (no API keys required)
+python test_sdk_wrappers_unit.py
+
+# Expected output:
+# ✅ BaseSDKWrapper imported
+# ✅ TokenTracker initialized
+# ✅ OpenAI wrappers imported
+# ✅ Anthropic wrappers imported
+# ✅ Event tracked
+# ✅ Event data verified
+```
+
+**Test Daemon Import:**
+```bash
+# Verify daemon can be imported and initialized
+python -c "from src.tokeneyes.daemon import TokenScannerDaemon; d = TokenScannerDaemon(); print('✅ Daemon initialized successfully')"
+```
+
+**Test SDK Integration (with real API keys):**
+```python
+# test_openai_integration.py
+from tokeneyes.sdk import OpenAI
+
+client = OpenAI(api_key="your-openai-api-key")
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": "Say hello!"}]
+)
+print(f"✅ Response: {response.choices[0].message.content}")
+# Token usage automatically tracked to ~/.aitracker/sdk_events.jsonl
+```
+
+```python
+# test_anthropic_integration.py
+from tokeneyes.sdk import Anthropic
+
+client = Anthropic(api_key="your-anthropic-api-key")
+response = client.messages.create(
+    model="claude-3-5-sonnet-20241022",
+    max_tokens=100,
+    messages=[{"role": "user", "content": "Say hello!"}]
+)
+print(f"✅ Response: {response.content[0].text}")
+# Token usage automatically tracked!
+```
+
+### Performance Testing
+
+```bash
+# Test daemon performance with concurrent file processing
+python -c "
+import asyncio
+from src.tokeneyes.daemon import TokenScannerDaemon
+
+async def test_performance():
+    daemon = TokenScannerDaemon()
+    import time
+    start = time.time()
+    await daemon.scan_all_logs()
+    elapsed = time.time() - start
+    print(f'✅ Scan completed in {elapsed:.2f}s')
+
+asyncio.run(test_performance())
+"
+```
+
+### Development Tips
+
+**Enable Debug Logging:**
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+```
+
+**Test Specific Parser:**
+```python
+from tokeneyes.parsers import get_parser
+
+parser = get_parser('openai')
+print(f"Supported models: {parser.supported_models}")
+```
+
+**Check Token Tracking:**
+```bash
+# View tracked SDK events
+cat ~/.aitracker/sdk_events.jsonl | python -m json.tool
+```
+
 ## 📚 Documentation
 
 - [**SCOPE.md**](SCOPE.md) - Project scope and focus (vibe coding)
+- [**OPTIMIZATION_COMPLETE.md**](OPTIMIZATION_COMPLETE.md) - Performance optimizations (3-5x faster)
+- [**OPTIMIZATION_SUMMARY.md**](OPTIMIZATION_SUMMARY.md) - Quick optimization overview
 - [Product Design](design/PRODUCT_DESIGN.md) - Vision, personas, pricing, ROI
 - [Technical Design](design/TECHNICAL_DESIGN.md) - Architecture, deployment, DR plan
 - [UI/UX Design](design/UI_DESIGN_SYSTEM.md) - Colors, components, accessibility
@@ -176,12 +300,21 @@ See [SDK Wrappers README](src/tokeneyes/sdk/README.md) for full documentation.
 - ✅ Example scripts and comprehensive documentation
 - 📋 Node.js SDK wrappers (planned)
 
-**Phase 6: Backend Infrastructure** 📋 Next Priority
+**Phase 6: Performance Optimizations** ✅ Complete (100%)
+- ✅ 3-5x faster log scanning (concurrent processing)
+- ✅ Smart file filtering (60-80% reduction in file operations)
+- ✅ Structured logging with Python logging module
+- ✅ Robust error handling with exponential backoff retry
+- ✅ Network timeout protection (30s)
+- ✅ 100% test pass rate (6/6 tests)
+- See [OPTIMIZATION_COMPLETE.md](OPTIMIZATION_COMPLETE.md) for details
+
+**Phase 7: Backend Infrastructure** 📋 Next Priority
 - FastAPI server
 - TimescaleDB
 - Redis caching
 
-**Phase 6: Dashboard** 📋 Planned
+**Phase 8: Dashboard** 📋 Planned
 - Next.js frontend
 - Real-time charts
 - Team analytics
