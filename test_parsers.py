@@ -2,7 +2,7 @@
 Test script to verify all parsers are working correctly
 """
 
-import asyncio
+import pytest
 from pathlib import Path
 from tokeneyes.parsers import (
     ParserRegistry,
@@ -11,6 +11,7 @@ from tokeneyes.parsers import (
 )
 
 
+@pytest.mark.asyncio
 async def test_all_parsers():
     """Test all registered parsers"""
 
@@ -87,11 +88,15 @@ async def test_all_parsers():
     print(f"Overall Coverage: {total_found}/{total_expected} parsers ({total_found/total_expected*100:.1f}%)")
     print("=" * 60)
 
-    if total_found == total_expected:
-        print("✅ All parsers successfully implemented!")
-    else:
-        print(f"⚠️  Missing {total_expected - total_found} parsers")
+    assert total_found == total_expected, f"Missing {total_expected - total_found} parsers"
+    print("✅ All parsers successfully implemented!")
+
+
+def main():
+    """Run tests when executed directly"""
+    import asyncio
+    asyncio.run(test_all_parsers())
 
 
 if __name__ == '__main__':
-    asyncio.run(test_all_parsers())
+    main()

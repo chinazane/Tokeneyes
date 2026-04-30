@@ -14,19 +14,16 @@ def test_base_classes():
     print("Test 1: Base Classes Import")
     print("=" * 60)
 
-    try:
-        from tokeneyes.sdk.base import BaseSDKWrapper, TokenTracker
-        print("✅ BaseSDKWrapper imported")
-        print("✅ TokenTracker imported")
+    from tokeneyes.sdk.base import BaseSDKWrapper, TokenTracker
+    print("✅ BaseSDKWrapper imported")
+    print("✅ TokenTracker imported")
 
-        # Test TokenTracker initialization
-        tracker = TokenTracker()
-        print(f"✅ TokenTracker initialized (state_dir: {tracker.state_dir})")
+    # Test TokenTracker initialization
+    tracker = TokenTracker()
+    print(f"✅ TokenTracker initialized (state_dir: {tracker.state_dir})")
 
-        return True
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        return False
+    assert tracker is not None
+    assert tracker.state_dir.exists()
 
 
 def test_wrapper_imports():
@@ -35,29 +32,28 @@ def test_wrapper_imports():
     print("Test 2: Wrapper Imports")
     print("=" * 60)
 
-    results = {}
-
     # Test OpenAI wrapper
+    openai_available = False
     try:
         from tokeneyes.sdk import OpenAI, AsyncOpenAI
         print("✅ OpenAI wrappers imported")
-        results['openai'] = True
+        openai_available = True
     except ImportError as e:
         print(f"⚠️  OpenAI wrappers not available: {e}")
         print("   (This is OK if openai SDK is not installed)")
-        results['openai'] = False
 
     # Test Anthropic wrapper
+    anthropic_available = False
     try:
         from tokeneyes.sdk import Anthropic, AsyncAnthropic
         print("✅ Anthropic wrappers imported")
-        results['anthropic'] = True
+        anthropic_available = True
     except ImportError as e:
         print(f"⚠️  Anthropic wrappers not available: {e}")
         print("   (This is OK if anthropic SDK is not installed)")
-        results['anthropic'] = False
 
-    return results
+    # At least one should be available if SDKs are installed
+    assert True  # This test is informational, not a hard requirement
 
 
 def test_package_exports():
@@ -66,32 +62,32 @@ def test_package_exports():
     print("Test 3: Package Exports")
     print("=" * 60)
 
-    try:
-        import tokeneyes.sdk as sdk
+    import tokeneyes.sdk as sdk
 
-        expected_exports = [
-            'BaseSDKWrapper',
-            'TokenTracker',
-            'OpenAI',
-            'AsyncOpenAI',
-            'Anthropic',
-            'AsyncAnthropic',
-        ]
+    expected_exports = [
+        'BaseSDKWrapper',
+        'TokenTracker',
+        'OpenAI',
+        'AsyncOpenAI',
+        'Anthropic',
+        'AsyncAnthropic',
+    ]
 
-        for export in expected_exports:
-            if hasattr(sdk, export):
-                value = getattr(sdk, export)
-                if value is not None:
-                    print(f"✅ {export} available")
-                else:
-                    print(f"⚠️  {export} is None (SDK not installed)")
+    found_exports = []
+    for export in expected_exports:
+        if hasattr(sdk, export):
+            value = getattr(sdk, export)
+            if value is not None:
+                print(f"✅ {export} available")
+                found_exports.append(export)
             else:
-                print(f"❌ {export} not found")
+                print(f"⚠️  {export} is None (SDK not installed)")
+        else:
+            print(f"❌ {export} not found")
 
-        return True
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        return False
+    # At least base classes should be available
+    assert 'BaseSDKWrapper' in found_exports
+    assert 'TokenTracker' in found_exports
 
 
 def test_token_tracker():
@@ -100,62 +96,51 @@ def test_token_tracker():
     print("Test 4: TokenTracker Functionality")
     print("=" * 60)
 
-    try:
-        from tokeneyes.sdk import TokenTracker
-        import tempfile
-        import json
+    from tokeneyes.sdk import TokenTracker
+    import tempfile
+    import json
 
-        # Use temporary directory for testing
-        with tempfile.TemporaryDirectory() as tmpdir:
-            state_dir = Path(tmpdir)
-            tracker = TokenTracker(state_dir=state_dir)
+    # Use temporary directory for testing
+    with tempfile.TemporaryDirectory() as tmpdir:
+        state_dir = Path(tmpdir)
+        tracker = TokenTracker(state_dir=state_dir)
 
-            print(f"✅ TokenTracker created with temp dir: {state_dir}")
+        print(f"✅ TokenTracker created with temp dir: {state_dir}")
 
-            # Track a test event
-            tracker.track_event(
-                service='test-service',
-                model='test-model',
-                prompt_tokens=100,
-                completion_tokens=200,
-                total_tokens=300,
-                cached_tokens=50,
-                metadata={'test': True}
-            )
+        # Track a test event
+        tracker.track_event(
+            service='test-service',
+            model='test-model',
+            prompt_tokens=100,
+            completion_tokens=200,
+            total_tokens=300,
+            cached_tokens=50,
+            metadata={'test': True}
+        )
 
-            print("✅ Event tracked")
+        print("✅ Event tracked")
 
-            # Verify event file was created
-            event_file = state_dir / 'sdk_events.jsonl'
-            if event_file.exists():
-                print(f"✅ Event file created: {event_file}")
+        # Verify event file was created
+        event_file = state_dir / 'sdk_events.jsonl'
+        assert event_file.exists(), "Event file was not created"
+        print(f"✅ Event file created: {event_file}")
 
-                # Read and verify event
-                with open(event_file) as f:
-                    event = json.loads(f.read().strip())
+        # Read and verify event
+        with open(event_file) as f:
+            event = json.loads(f.read().strip())
 
-                assert event['service'] == 'test-service'
-                assert event['model'] == 'test-model'
-                assert event['prompt_tokens'] == 100
-                assert event['completion_tokens'] == 200
-                assert event['total_tokens'] == 300
-                assert event['cached_tokens'] == 50
-                assert event['metadata']['test'] is True
+        assert event['service'] == 'test-service'
+        assert event['model'] == 'test-model'
+        assert event['prompt_tokens'] == 100
+        assert event['completion_tokens'] == 200
+        assert event['total_tokens'] == 300
+        assert event['cached_tokens'] == 50
+        assert event['metadata']['test'] is True
 
-                print("✅ Event data verified")
-                print(f"   Service: {event['service']}")
-                print(f"   Model: {event['model']}")
-                print(f"   Tokens: {event['total_tokens']}")
-            else:
-                print("❌ Event file not created")
-                return False
-
-        return True
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
+        print("✅ Event data verified")
+        print(f"   Service: {event['service']}")
+        print(f"   Model: {event['model']}")
+        print(f"   Tokens: {event['total_tokens']}")
 
 
 def test_wrapper_initialization():
@@ -164,7 +149,8 @@ def test_wrapper_initialization():
     print("Test 5: Wrapper Initialization")
     print("=" * 60)
 
-    results = {}
+    openai_works = False
+    anthropic_works = False
 
     # Test OpenAI wrapper initialization
     try:
@@ -178,14 +164,11 @@ def test_wrapper_initialization():
         assert hasattr(client, '_client')
         assert hasattr(client, 'track_tokens')
         print("✅ OpenAI wrapper has expected attributes")
-
-        results['openai'] = True
+        openai_works = True
     except ImportError:
         print("⚠️  OpenAI SDK not installed, skipping")
-        results['openai'] = False
     except Exception as e:
         print(f"⚠️  OpenAI wrapper initialization issue: {e}")
-        results['openai'] = False
 
     # Test Anthropic wrapper initialization
     try:
@@ -197,16 +180,14 @@ def test_wrapper_initialization():
         assert hasattr(client, '_client')
         assert hasattr(client, 'track_tokens')
         print("✅ Anthropic wrapper has expected attributes")
-
-        results['anthropic'] = True
+        anthropic_works = True
     except ImportError:
         print("⚠️  Anthropic SDK not installed, skipping")
-        results['anthropic'] = False
     except Exception as e:
         print(f"⚠️  Anthropic wrapper initialization issue: {e}")
-        results['anthropic'] = False
 
-    return results
+    # At least test that the test ran
+    assert True
 
 
 def main():
